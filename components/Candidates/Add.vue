@@ -187,6 +187,14 @@
 	const addNewCandidate = () => {
 		console.log(newCandidate.value);
 		emit("addCandidate", newCandidate.value);
+		newCandidate.value = {
+			first_name: "",
+			last_name: "",
+			applied_date: "",
+			designation: "",
+			team: "",
+			owner: "",
+		};
 	};
 </script>
 
