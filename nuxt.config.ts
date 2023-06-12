@@ -15,5 +15,14 @@ export default defineNuxtConfig({
 			title: process.env.VITE_APP_NAME,
 		},
 	},
-	modules: ["@nuxtjs/tailwindcss"],
+	alias: {
+		pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs",
+	},
+	imports: {
+		dirs: ["./stores"],
+	},
+	pinia: {
+		autoImports: ["defineStore", "acceptHMRUpdate"],
+	},
+	modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt"],
 });

@@ -5,138 +5,13 @@ import p4 from "@/assets/images/pp-4.jpg";
 import p5 from "@/assets/images/pp-5.jpg";
 
 export const useTableData = () => {
-	// const TABLE_DUMMY_DATA = [
-	// 	{
-	// 		id: 1,
-	// 		candidate: {
-	// 			name: "Darlene Robertson",
-	// 			image: p1,
-	// 		},
-	// 		rating: 0,
-	// 		stages: {
-	// 			state: "Screening",
-	// 			value: 2,
-	// 			color: "bg-green-800",
-	// 		},
-	// 		team: {
-	// 			self: "Junior UI Designer",
-	// 			name: "Design Team",
-	// 		},
-
-	// 		appliedDate: new Date("2022-02-15"),
-	// 		owner: {
-	// 			name: "Kristin Watson",
-	// 			image: p2,
-	// 		},
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		candidate: {
-	// 			name: "Cody Fisher",
-	// 			image: p3,
-	// 		},
-	// 		rating: 2,
-	// 		stages: {
-	// 			state: "New Applied",
-	// 			value: 1,
-	// 			color: "bg-emerald-400",
-	// 		},
-	// 		team: {
-	// 			self: "Junior UX Designer",
-	// 			name: "Design Team",
-	// 		},
-
-	// 		appliedDate: new Date("2023-01-12"),
-	// 		owner: {
-	// 			name: "Albert Flores",
-	// 			image: p4,
-	// 		},
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		candidate: {
-	// 			name: "Jenny Wilson",
-	// 			image: p4,
-	// 		},
-	// 		rating: 3,
-	// 		stages: {
-	// 			state: "Design Challange",
-	// 			value: 3,
-	// 			color: "bg-orange-400",
-	// 		},
-	// 		team: {
-	// 			self: "UX Researcher",
-	// 			name: "Design Team",
-	// 		},
-
-	// 		appliedDate: new Date("2022-12-15"),
-	// 		owner: {
-	// 			name: "Dianne Russell",
-	// 			image: p5,
-	// 		},
-	// 	},
-	// 	{
-	// 		id: 4,
-	// 		candidate: {
-	// 			name: "Diana Jane",
-	// 			image: p5,
-	// 		},
-	// 		rating: 4,
-	// 		stages: {
-	// 			state: "Interview",
-	// 			value: 4,
-	// 			color: "bg-violet-400",
-	// 		},
-	// 		team: {
-	// 			self: "UX Researcher",
-	// 			name: "Developer Team",
-	// 		},
-
-	// 		appliedDate: new Date("2023-02-15"),
-	// 		owner: {
-	// 			name: "Kristin Watson",
-	// 			image: p2,
-	// 		},
-	// 	},
-	// ];
-
 	const TABLE_DUMMY_DATA = ref(null);
-	const DUMMY_DATA = ref(null);
+	const DUMMY_DATA = useState("candidate", () => {});
 
 	const setData = (data) => {
 		TABLE_DUMMY_DATA.value = JSON.parse(JSON.stringify(data));
 		DUMMY_DATA.value = JSON.parse(JSON.stringify(data));
 		console.log(DUMMY_DATA.value, data);
-	};
-
-	const sortByNameAtoZ = () => {
-		console.log(DUMMY_DATA);
-		DUMMY_DATA.value.sort((a, b) =>
-			a.candidate.name.localeCompare(b.candidate.name)
-		);
-	};
-
-	const sortByNameZtoA = () => {
-		console.log(DUMMY_DATA);
-		DUMMY_DATA.value.sort((a, b) =>
-			b.candidate.name.localeCompare(a.candidate.name)
-		);
-	};
-
-	const sortByRating1to5 = () => {
-		DUMMY_DATA.value.sort((a, b) => a.rating - b.rating);
-	};
-
-	const sortByRating5to1 = () => {
-		DUMMY_DATA.value.sort((a, b) => b.rating - a.rating);
-	};
-
-	const sortByDate1to12 = () => {
-		DUMMY_DATA.value.sort((a, b) => a.appliedDate - b.appliedDate);
-	};
-
-	const sortByDate12to1 = () => {
-		DUMMY_DATA.value.sort((a, b) => b.appliedDate - a.appliedDate);
 	};
 
 	// FILTERING
@@ -256,12 +131,6 @@ export const useTableData = () => {
 	return {
 		setData,
 		DUMMY_DATA,
-		sortByNameAtoZ,
-		sortByNameZtoA,
-		sortByRating1to5,
-		sortByRating5to1,
-		sortByDate1to12,
-		sortByDate12to1,
 		filterDataByText,
 		filterDataByNum,
 		filterDataByDate,

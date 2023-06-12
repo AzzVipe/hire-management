@@ -7,7 +7,11 @@
 		"tableRowMap",
 	]);
 
-	console.log(data.candidate.name);
+	const store = useCandidatesStore();
+
+	const isCandidateSelected = ref(false);
+
+	// console.log(data.candidate.name);
 	const rowData = {
 		...data,
 	};
@@ -18,16 +22,24 @@
 	const detailsHandler = (rowData) => {
 		getCurrentCandInfo(rowData);
 	};
+
+	watch(isCandidateSelected, (newData, oldData) => {
+		if (newData === true) store.selectCandidate(rowData._id);
+		else store.unselectCandidate(rowData._id);
+	});
 </script>
 
 <template>
 	<td class="w-4 p-4 rounded-tl-md" scope="row">
 		<div class="flex items-center">
 			<input
-				id="checkbox-table-search-1"
+				v-model="isCandidateSelected"
+				:id="`checkbox-table-search-${rowData._id}`"
 				type="checkbox"
 				class="w-5 h-5 text-green-400 bg-gray-100 border-gray-300 focus:ring-white focus:ring-0" />
-			<label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+			<label :for="`checkbox-table-search-${rowData._id}`" class="sr-only"
+				>checkbox</label
+			>
 		</div>
 	</td>
 	<td

@@ -11,11 +11,11 @@
 		ChevronLeftIcon,
 		ChevronRightIcon,
 		PlusIcon,
+		TrashIcon,
 	} from "@heroicons/vue/24/solid";
 
-	const { getCandidates, addCandidate } = useRealmApp();
-	const { setData, DUMMY_DATA } = useTableData();
-	// const DUMMY_DATA = ref(null);
+	const store = useCandidatesStore();
+	const tableKey = ref(0);
 
 	const headers = ref([
 		{ name: "Rating", type: "Number" },
@@ -41,17 +41,9 @@
 	]);
 
 	onBeforeMount(async () => {
-		console.log(DUMMY_DATA.value);
-		await getCandidates().then((data) => {
-			// setData(data);
-			DUMMY_DATA.value = data;
-		});
-		console.log(DUMMY_DATA.value);
+		store.initData();
+		console.log(store.$state);
 	});
-
-	// onMounted(() => {
-	// 	console.log(DUMMY_DATA.value);
-	// });
 
 	function arrangeByRating(data) {
 		return data.reduce((acc, user) => {
@@ -154,56 +146,45 @@
 			}
 		}
 	}
-
-	function addCandidateCallback(data) {
-		let obj = {};
-		obj.candidate = {};
-		obj.stages = {};
-		obj.team = {};
-		obj.owner = {};
-		obj.candidate.name = `${data.first_name} ${data.last_name}`;
-		obj.candidate.image =
-			"https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-		obj.team.self = data.designation;
-		obj.team.name = data.team;
-		obj.stages.state = "New Applied";
-		obj.stages.value = 1;
-		obj.stages.color = "bg-emerald-400";
-		obj.owner.name = data.owner;
-		obj.owner.image = "https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-		obj.rating = 0;
-		obj.appliedDate = new Date(data.applied_date);
-		console.log(data, obj);
-		DUMMY_DATA.value.push(obj);
-		addCandidate(obj);
-	}
 </script>
 
 <template>
 	<div
-		v-if="DUMMY_DATA !== null"
+		v-if="store.candidatesData !== null"
 		class="flex flex-col h-full lg:h-[91.5vh] px-5 pt-5">
 		<header class="mb-10 max-lg:mb-6 max-sm:mb-8">
 			<div
 				class="flex items-center justify-between max-xl:flex-col max-xl:items-start max-xl:gap-4 max-sm:flex-row">
 				<div class="flex items-center">
 					<h3 class="mr-6 text-2xl max-xl:text-xl max-xl:mr-4 max-sm:hidden">
-						{{ DUMMY_DATA.length }} Candidates
+						{{ store.candidatesData.length }} Candidates
 					</h3>
 
 					<!-- FILTER Dropdown -->
-					<CandidatesFilterDropDown :headers="headers" />
+					<!-- <CandidatesFilterDropDown :headers="headers" /> -->
 
 					<!-- HIDE Dropdown -->
-					<CandidatesHideDropDown />
+					<!-- <CandidatesHideDropDown /> -->
 
 					<!-- SORT Dropdown -->
-					<CandidatesSortDropDown />
+					<CandidatesSortDropDown @refresh-data="tableKey++" />
 
-					<CandidatesGroupDropDown />
+					<!-- <CandidatesGroupDropDown /> -->
 				</div>
 
 				<div class="flex items-center">
+					<button
+						v-if="store.selectedCandidates.length > 0"
+						id="deleteCandidateButton"
+						data-modal-toggle="deleteCandidate"
+						class="p-2 mr-5 text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-600 hover:text-white">
+						<TrashIcon class="w-6 h-6 font-semibold" />
+					</button>
+					<CandidatesDelete
+						@delete-candidate="store.deleteCandidate()"
+						v-if="store.selectedCandidates.length > 0"
+						:length="store.selectedCandidates.length" />
+
 					<div
 						class="pr-5 mr-5 border-r border-gray-400 max-md:border-none max-md:mr-0">
 						<button
@@ -229,13 +210,14 @@
 						<PlusIcon class="w-4 h-4 font-semibold max-md:w-5 max-md:h-5" />
 						<span class="text-sm font-medium max-md:hidden">Add Candidate</span>
 					</button>
-					<CandidatesAdd @add-candidate="addCandidateCallback($event)" />
+					<CandidatesAdd @add-candidate="store.addCandidate($event)" />
 				</div>
 			</div>
 		</header>
 
 		<CandidatesTable
-			:TABLE_DATA="DUMMY_DATA"
+			:key="tableKey"
+			:TABLE_DATA="store.candidatesData"
 			:headers="headers"
 			:groupMap="groupMap"
 			:headMap="headMap"
