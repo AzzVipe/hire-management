@@ -201,7 +201,10 @@
 						<TrashIcon class="w-6 h-6 font-semibold" />
 					</button>
 					<CandidatesDelete
-						@delete-candidate="store.deleteCandidate()"
+						@delete-candidate="
+							store.deleteCandidate();
+							tableKey++;
+						"
 						v-if="store.selectedCandidates.length > 0"
 						:length="store.selectedCandidates.length" />
 
@@ -230,7 +233,11 @@
 						<PlusIcon class="w-4 h-4 font-semibold max-md:w-5 max-md:h-5" />
 						<span class="text-sm font-medium max-md:hidden">Add Candidate</span>
 					</button>
-					<CandidatesAdd @add-candidate="store.addCandidate($event)" />
+					<CandidatesAdd
+						@add-candidate="
+							store.addCandidate($event);
+							tableKey++;
+						" />
 				</div>
 			</div>
 		</header>

@@ -31,10 +31,11 @@ export const useCandidatesStore = defineStore("counter", {
 			return temp;
 		},
 
-		addCandidate(data) {
+		async addCandidate(data) {
 			const { addCandidateToDB } = useRealmApp();
+			const { insertedId } = await addCandidateToDB(data);
+			data._id = insertedId;
 			this.candidatesData.push(data);
-			addCandidateToDB(data);
 			this.selectedCandidates = [];
 		},
 
@@ -45,8 +46,8 @@ export const useCandidatesStore = defineStore("counter", {
 			);
 			console.log(data, this.selectedCandidates, index);
 			this.candidatesData[index] = data;
-			this.selectedCandidates = [];
 			updateCandidateFromDB(data);
+			this.selectedCandidates = [];
 		},
 
 		deleteCandidate() {
@@ -56,7 +57,7 @@ export const useCandidatesStore = defineStore("counter", {
 				const index = this.candidatesData.findIndex(
 					(element) => id === element._id
 				);
-				this.candidatesData.splice(index - 1, 1);
+				this.candidatesData.splice(index, 1);
 				deleteCandidateFromDB(id);
 			});
 			this.selectedCandidates = [];
