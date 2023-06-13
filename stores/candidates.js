@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useCandidatesStore = defineStore("counter", {
 	state: () => ({
 		candidatesData: null,
+		candidatesDataBackup: null,
 		selectedCandidates: [],
 	}),
 
@@ -26,7 +27,9 @@ export const useCandidatesStore = defineStore("counter", {
 		},
 
 		findById(id) {
-			let temp = this.candidatesData.find((item) => item._id === id);
+			let temp = this.candidatesData.find(
+				(item) => item._id.toString() === id.toString()
+			);
 			console.log(temp);
 			return temp;
 		},
@@ -89,6 +92,100 @@ export const useCandidatesStore = defineStore("counter", {
 
 		sortByDate12to1() {
 			this.candidatesData.sort((a, b) => b.appliedDate - a.appliedDate);
+		},
+
+		filterDataByField(cb) {
+			this.candidatesData = this.candidatesData.filter(cb);
+		},
+
+		filterDataByText(keyword, operator, field) {
+			const nestedKeys = field.split(".");
+
+			this.filterDataByField((item) => {
+				let fieldValue = item;
+				// Traverse the nested keys to access the final value
+				for (const key of nestedKeys) {
+					if (fieldValue && fieldValue.hasOwnProperty(key)) {
+						fieldValue = fieldValue[key];
+					} else {
+						fieldValue = undefined;
+						break;
+					}
+				}
+
+				// Perform the filtering based on the operator and keyword
+				switch (operator) {
+					case "is":
+						return (
+							fieldValue &&
+							fieldValue.toLowerCase().includes(keyword.toLowerCase())
+						);
+					case "is-not":
+						return (
+							!fieldValue ||
+							!fieldValue.toLowerCase().includes(keyword.toLowerCase())
+						);
+					default:
+						return true; // No operator specified, return all data
+				}
+			});
+		},
+
+		filterDataByNum(inputNum, operator, field) {
+			switch (operator) {
+				case "eq":
+					this.filterDataByField((item) => item[field] === inputNum);
+					break;
+				case "nt-eq":
+					this.filterDataByField((item) => item[field] !== inputNum);
+					break;
+				case "lt":
+					this.filterDataByField((item) => item[field] < inputNum);
+					break;
+				case "gt":
+					this.filterDataByField((item) => item[field] > inputNum);
+					break;
+				case "le":
+					this.filterDataByField((item) => item[field] <= inputNum);
+					break;
+				case "ge":
+					this.filterDataByField((item) => item[field] >= inputNum);
+					break;
+			}
+		},
+
+		filterDataByDate(targetDate, operator, field) {
+			switch (operator) {
+				case "is":
+					this.filterDataByField(
+						(item) => item[field].getTime() === new Date(targetDate).getTime()
+					);
+					break;
+				case "is-before":
+					this.filterDataByField(
+						(item) => item[field].getTime() < new Date(targetDate).getTime()
+					);
+					break;
+				case "is-after":
+					this.filterDataByField(
+						(item) => item[field].getTime() > new Date(targetDate).getTime()
+					);
+					break;
+				case "is-on-before":
+					this.filterDataByField(
+						(item) => item[field].getTime() <= new Date(targetDate).getTime()
+					);
+					break;
+				case "is-on-after":
+					this.filterDataByField(
+						(item) => item[field].getTime() >= new Date(targetDate).getTime()
+					);
+					break;
+			}
+		},
+
+		resetFilterFields() {
+			this.initData();
 		},
 	},
 });

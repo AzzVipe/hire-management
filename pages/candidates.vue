@@ -43,7 +43,6 @@
 
 	onBeforeMount(async () => {
 		store.initData();
-		console.log(store.$state);
 	});
 
 	function arrangeByRating(data) {
@@ -166,10 +165,10 @@
 					</h3>
 
 					<!-- FILTER Dropdown -->
-					<!-- <CandidatesFilterDropDown :headers="headers" /> -->
+					<CandidatesFilterDropDown />
 
 					<!-- HIDE Dropdown -->
-					<!-- <CandidatesHideDropDown /> -->
+					<CandidatesHideDropDown />
 
 					<!-- SORT Dropdown -->
 					<CandidatesSortDropDown @refresh-data="tableKey++" />
@@ -201,11 +200,11 @@
 						<TrashIcon class="w-6 h-6 font-semibold" />
 					</button>
 					<CandidatesDelete
+						v-if="store.selectedCandidates.length > 0"
 						@delete-candidate="
 							store.deleteCandidate();
 							tableKey++;
 						"
-						v-if="store.selectedCandidates.length > 0"
 						:length="store.selectedCandidates.length" />
 
 					<div

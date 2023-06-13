@@ -165,9 +165,22 @@
 		candidateData.value.candidate.firstName = name[0];
 		candidateData.value.candidate.lastName = name[1];
 		candidateData.value._id = BSON.ObjectID(candidateData.value._id);
-		candidateData.value.appliedDate = new Date(candidateData.value.appliedDate);
+		// candidateData.value.appliedDate = new Date(candidateData.value.appliedDate);
+		let tempDate = new Date(candidateData.value.appliedDate);
 
-		console.log(candidateData.value, data);
+		let date = tempDate.getDate();
+		if (date < 10) {
+			date = date.toString().padStart(2, "0");
+		}
+
+		let month = tempDate.getMonth() + 1;
+		if (month < 10) {
+			month = month.toString().padStart(2, "0");
+		}
+
+		let year = tempDate.getFullYear();
+
+		candidateData.value.appliedDate = [year, month, date].join("-");
 	});
 
 	onMounted(() => {

@@ -4,13 +4,9 @@
 	import { Dropdown } from "flowbite";
 
 	onMounted(() => {
-		// set the dropdown menu element
 		const $targetElFilter = document.getElementById("filterDropDownMenu");
-
-		// set the element that trigger the dropdown menu on click
 		const $triggerElFilter = document.getElementById("filterDropDownBtn");
 
-		// options with default values
 		const options = {
 			placement: "bottom",
 			triggerType: "click",
@@ -26,12 +22,8 @@
 		);
 	});
 
-	const {
-		filterDataByText,
-		filterDataByNum,
-		filterDataByDate,
-		resetFilterFields,
-	} = useTableData();
+	// PINIA store
+	const store = useCandidatesStore();
 
 	const selectField = ref("text-name");
 
@@ -61,7 +53,7 @@
 			resetBtnVisible.value = true;
 		} else {
 			resetBtnVisible.value = false;
-			resetFilterFields();
+			store.resetFilterFields();
 		}
 	});
 
@@ -75,29 +67,29 @@
 		const selectedDateOp = date.op;
 
 		// const filetMap = new Map([
-		//   ['Number', filterDataByNum],
+		//   ['Number', store.filterDataByNum],
 		//   ['Date', filterDataByDate],
-		//   ['String', filterDataByText],
+		//   ['String', store.filterDataByText],
 		// ]);
 
 		switch (selectedField) {
 			case "name":
-				filterDataByText(selectedText, selectedTextOp, "candidate.name");
+				store.filterDataByText(selectedText, selectedTextOp, "candidate.name");
 				break;
 			case "rating":
-				filterDataByNum(selectedRating, selectedRatingOp, "rating");
+				store.filterDataByNum(selectedRating, selectedRatingOp, "rating");
 				break;
 			case "stages":
-				filterDataByText(selectedText, selectedTextOp, "stages.state");
+				store.filterDataByText(selectedText, selectedTextOp, "stages.state");
 				break;
 			case "team":
-				filterDataByText(selectedText, selectedTextOp, "team.team");
+				store.filterDataByText(selectedText, selectedTextOp, "team.team");
 				break;
 			case "date":
-				filterDataByDate(selectedDate, selectedDateOp, "appliedDate");
+				store.filterDataByDate(selectedDate, selectedDateOp, "appliedDate");
 				break;
 			case "owner":
-				filterDataByText(selectedText, selectedTextOp, "owner.name");
+				store.filterDataByText(selectedText, selectedTextOp, "owner.name");
 				break;
 		}
 	};
@@ -109,7 +101,7 @@
 		text.op = "is";
 		num.op = "eq";
 		date.op = "is";
-		resetFilterFields();
+		store.resetFilterFields();
 	};
 </script>
 
