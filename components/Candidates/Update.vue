@@ -1,6 +1,7 @@
 <template>
 	<div
-		id="addCandidate"
+		v-if="candidateData"
+		id="updateCandidate"
 		tabindex="-1"
 		aria-hidden="true"
 		class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
@@ -12,12 +13,12 @@
 				<div
 					class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
 					<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-						Add Candidate
+						Edit Candidate
 					</h3>
 					<button
 						type="button"
 						class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-						data-modal-toggle="addCandidate">
+						data-modal-toggle="updateCandidate">
 						<svg
 							aria-hidden="true"
 							class="w-5 h-5"
@@ -34,9 +35,9 @@
 				</div>
 				<!-- Modal body -->
 				<form
-					id="add-candidate-form"
+					id="update-candidate-form"
 					action="#"
-					@submit.prevent="addNewCandidate()">
+					@submit.prevent="updateCandidateHandler()">
 					<div class="grid gap-4 mb-8 sm:grid-cols-2">
 						<div>
 							<label
@@ -45,7 +46,7 @@
 								>First name</label
 							>
 							<input
-								v-model="newCandidate.candidate.firstName"
+								v-model="candidateData.candidate.firstName"
 								type="text"
 								name="add-first-name"
 								id="add-first-name"
@@ -60,7 +61,7 @@
 								>Last name</label
 							>
 							<input
-								v-model="newCandidate.candidate.lastName"
+								v-model="candidateData.candidate.lastName"
 								type="text"
 								name="add-last-name"
 								id="add-last-name"
@@ -75,7 +76,7 @@
 								>Date applied</label
 							>
 							<input
-								v-model="newCandidate.appliedDate"
+								v-model="candidateData.appliedDate"
 								type="date"
 								name="add-applied-date"
 								id="add-applied-date"
@@ -90,7 +91,7 @@
 								>Designation</label
 							>
 							<select
-								v-model="newCandidate.team.self"
+								v-model="candidateData.team.self"
 								required
 								id="add-designation"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
@@ -107,7 +108,7 @@
 								>Team</label
 							>
 							<select
-								v-model="newCandidate.team.name"
+								v-model="candidateData.team.name"
 								required
 								id="add-team"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
@@ -124,7 +125,7 @@
 								>Owner</label
 							>
 							<select
-								v-model="newCandidate.owner.name"
+								v-model="candidateData.owner.name"
 								required
 								id="add-owner"
 								placeholder="Select owner"
@@ -137,20 +138,11 @@
 						</div>
 					</div>
 					<button
-						data-modal-toggle="addCandidate"
+						@click="updateCandidateHandler()"
 						type="submit"
+						data-modal-toggle="updateCandidate"
 						class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-semibold rounded-lg text-base px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-						<svg
-							class="mr-1 -ml-1 w-6 h-6"
-							fill="currentColor"
-							viewBox="0 0 20 20"
-							xmlns="http://www.w3.org/2000/svg">
-							<path
-								fill-rule="evenodd"
-								d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-								clip-rule="evenodd"></path>
-						</svg>
-						Add candidate
+						Update candidate
 					</button>
 				</form>
 			</div>
@@ -160,58 +152,34 @@
 
 <script setup>
 	import { initModals } from "flowbite";
+	import { BSON } from "realm-web";
 
-	const newCandidate = ref({
-		candidate: {
-			firstName: "",
-			lastName: "",
-		},
-		appliedDate: "",
-		team: {
-			name: "",
-			self: "",
-		},
-		owner: {
-			name: "",
-		},
+	const { data } = defineProps(["data"]);
+	const candidateData = ref(null);
+
+	const emit = defineEmits(["updateCandidate"]);
+
+	onBeforeMount(() => {
+		candidateData.value = JSON.parse(JSON.stringify(data));
+		let name = data.candidate.name.split(" ");
+		candidateData.value.candidate.firstName = name[0];
+		candidateData.value.candidate.lastName = name[1];
+		candidateData.value._id = BSON.ObjectID(candidateData.value._id);
+		candidateData.value.appliedDate = new Date(candidateData.value.appliedDate);
+
+		console.log(candidateData.value, data);
 	});
-
-	const emit = defineEmits(["addCandidate"]);
 
 	onMounted(() => {
 		initModals();
 	});
 
-	const addNewCandidate = () => {
-		newCandidate.value.candidate.name = `${newCandidate.value.candidate.firstName} ${newCandidate.value.candidate.lastName}`;
-		newCandidate.value.candidate.image =
-			"https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-		newCandidate.value.stages = {};
-		newCandidate.value.stages.state = "New Applied";
-		newCandidate.value.stages.value = 1;
-		newCandidate.value.stages.color = "bg-green-400";
-		newCandidate.value.owner.image =
-			"https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-		newCandidate.value.rating = 0;
-		newCandidate.value.appliedDate = new Date(newCandidate.value.appliedDate);
+	const updateCandidateHandler = () => {
+		// @TODO: Check if data is empty
+		candidateData.value.candidate.name = `${candidateData.value.candidate.firstName} ${candidateData.value.candidate.lastName}`;
 
-		console.log(newCandidate.value);
-
-		emit("addCandidate", newCandidate.value);
-		newCandidate.value = {
-			candidate: {
-				firstName: "",
-				lastName: "",
-			},
-			appliedDate: "",
-			team: {
-				name: "",
-				self: "",
-			},
-			owner: {
-				name: "",
-			},
-		};
+		console.log("test", candidateData.value);
+		emit("updateCandidate", candidateData.value);
 	};
 </script>
 

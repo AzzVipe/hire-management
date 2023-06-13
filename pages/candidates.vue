@@ -12,6 +12,7 @@
 		ChevronRightIcon,
 		PlusIcon,
 		TrashIcon,
+		PencilIcon,
 	} from "@heroicons/vue/24/solid";
 
 	const store = useCandidatesStore();
@@ -146,6 +147,10 @@
 			}
 		}
 	}
+
+	function getCandidateByIdWrapper(id) {
+		return store.findById(id);
+	}
 </script>
 
 <template>
@@ -173,6 +178,21 @@
 				</div>
 
 				<div class="flex items-center">
+					<button
+						v-if="store.selectedCandidates.length === 1"
+						id="updateCandidateButton"
+						data-modal-toggle="updateCandidate"
+						class="p-2 mr-5 text-primary-600 bg-white border border-primary-300 rounded-md hover:bg-primary-600 hover:text-white">
+						<PencilIcon class="w-6 h-6 font-semibold" />
+					</button>
+					<CandidatesUpdate
+						v-if="store.selectedCandidates.length === 1"
+						:data="getCandidateByIdWrapper(store.selectedCandidates[0])"
+						@update-candidate="
+							store.updateCandidate($event);
+							tableKey++;
+						" />
+
 					<button
 						v-if="store.selectedCandidates.length > 0"
 						id="deleteCandidateButton"

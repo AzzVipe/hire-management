@@ -52,6 +52,24 @@ export const useRealmApp = () => {
 		return result;
 	}
 
+	async function updateCandidateFromDB(candidate) {
+		if (currentUser === null) return null;
+
+		const mongo = currentUser.mongoClient("mongodb-atlas");
+		const collection = mongo.db("db1").collection("candidates");
+
+		let result;
+
+		await collection
+			.updateOne({ _id: candidate._id }, candidate)
+			.then((data) => {
+				console.log(data);
+				result = data;
+			});
+
+		return result;
+	}
+
 	async function deleteCandidateFromDB(id) {
 		if (currentUser === null) return null;
 
@@ -75,6 +93,7 @@ export const useRealmApp = () => {
 		loginApiKey,
 		getCandidates,
 		addCandidateToDB,
+		updateCandidateFromDB,
 		deleteCandidateFromDB,
 	};
 };

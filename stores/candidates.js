@@ -25,31 +25,28 @@ export const useCandidatesStore = defineStore("counter", {
 			this.selectedCandidates.splice(index, 1);
 		},
 
+		findById(id) {
+			let temp = this.candidatesData.find((item) => item._id === id);
+			console.log(temp);
+			return temp;
+		},
+
 		addCandidate(data) {
 			const { addCandidateToDB } = useRealmApp();
-			let obj = {};
-			obj.candidate = {};
-			obj.stages = {};
-			obj.team = {};
-			obj.owner = {};
-			obj.candidate.name = `${data.first_name} ${data.last_name}`;
-			obj.candidate.image =
-				"https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-			obj.team.self = data.designation;
-			obj.team.name = data.team;
-			obj.stages.state = "New Applied";
-			obj.stages.value = 1;
-			obj.stages.color = "bg-green-400";
-			obj.owner.name = data.owner;
-			obj.owner.image =
-				"https://cdn-icons-png.flaticon.com/128/1144/1144709.png";
-			obj.rating = 0;
-			obj.appliedDate = new Date(data.applied_date);
-			console.log(obj);
-
-			this.candidatesData.push(obj);
-			addCandidateToDB(obj);
+			this.candidatesData.push(data);
+			addCandidateToDB(data);
 			this.selectedCandidates = [];
+		},
+
+		updateCandidate(data) {
+			const { updateCandidateFromDB } = useRealmApp();
+			const index = this.candidatesData.findIndex(
+				(element) => data._id.toString() === element._id.toString()
+			);
+			console.log(data, this.selectedCandidates, index);
+			this.candidatesData[index] = data;
+			this.selectedCandidates = [];
+			updateCandidateFromDB(data);
 		},
 
 		deleteCandidate() {
@@ -62,6 +59,7 @@ export const useCandidatesStore = defineStore("counter", {
 				this.candidatesData.splice(index - 1, 1);
 				deleteCandidateFromDB(id);
 			});
+			this.selectedCandidates = [];
 		},
 
 		sortByNameAtoZ() {
