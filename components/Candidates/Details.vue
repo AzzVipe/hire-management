@@ -203,12 +203,14 @@
 							class="p-4 grid grid-cols-[40fr_60fr] gap-y-4 max-lg:grid-cols-1">
 							<div>
 								<span class="text-slate-500 text-sm font-medium">Name</span>
-								<p class="text-sm font-semibold text-gray-700">Cody Fisher</p>
+								<p class="text-sm font-semibold text-gray-700">
+									{{ currCandidate?.candidate.name }}
+								</p>
 							</div>
 							<div>
 								<span class="text-slate-500 text-sm font-medium">Email</span>
 								<p class="text-sm font-semibold text-gray-700">
-									example@email.com
+									{{ currCandidate?.candidate.primaryEmail }}
 								</p>
 							</div>
 							<div>
@@ -217,7 +219,9 @@
 							</div>
 							<div>
 								<span class="text-slate-500 text-sm font-medium">Phone</span>
-								<p class="text-sm font-semibold text-gray-700">+62 7583-9749</p>
+								<p class="text-sm font-semibold text-gray-700">
+									{{ currCandidate?.candidate.phone }}
+								</p>
 							</div>
 							<div>
 								<span class="text-slate-500 text-sm font-medium"
@@ -259,7 +263,7 @@
 									>Current Job Title</span
 								>
 								<p class="text-sm font-semibold text-gray-700">
-									UI/UX Designer
+									{{ currCandidate?.team.self }}
 								</p>
 							</div>
 							<div>

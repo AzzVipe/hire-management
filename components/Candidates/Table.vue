@@ -4,15 +4,27 @@
 	import { Drawer } from "flowbite";
 	import useGroup from "~/composables/grouping";
 
-	const { TABLE_DATA, headers, groupMap, headMap, changeGroup, tableRowMap } =
-		defineProps([
-			"TABLE_DATA",
-			"headers",
-			"groupMap",
-			"headMap",
-			"changeGroup",
-			"tableRowMap",
-		]);
+	const {
+		TABLE_DATA,
+		headers,
+		headersConfig,
+		groupMap,
+		headMap,
+		changeGroup,
+		tableRowMap,
+	} = defineProps([
+		"TABLE_DATA",
+		"headers",
+		"headersConfig",
+		"groupMap",
+		"headMap",
+		"changeGroup",
+		"tableRowMap",
+	]);
+
+	const emit = defineEmits(["refreshCandidates"]);
+	const store = useCandidatesStore();
+
 	const local_headers = ref([...headers]);
 	const { grouped } = useGroup();
 	const { tableTdVisible } = useHideDropDown();
@@ -154,6 +166,20 @@
 						:data="data"
 						:tableRowMap="tableRowMap"
 						:headers="local_headers" />
+					<CandidatesUpdate
+						:data="data"
+						:headersConfig="headersConfig"
+						@update-candidate="
+							store.updateCandidate($event);
+							emit('refreshCandidates');
+						" />
+					<CandidatesDelete
+						:id="data._id"
+						:length="1"
+						@delete-candidate="
+							store.deleteCandidate(data._id);
+							emit('refreshCandidates');
+						" />
 				</tr>
 			</tbody>
 			<tbody v-else>

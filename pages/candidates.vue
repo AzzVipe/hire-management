@@ -26,6 +26,37 @@
 		{ name: "Owner", type: "String" },
 	]);
 
+	const headersConfig = ref([
+		{
+			name: "First name",
+			parent: "candidate",
+			field: "firstName",
+			type: "text",
+		},
+		{
+			name: "Last name",
+			parent: "candidate",
+			field: "lastName",
+			type: "text",
+		},
+		{
+			name: "Email",
+			parent: "candidate",
+			field: "primaryEmail",
+			type: "email",
+		},
+		{
+			name: "Phone",
+			parent: "candidate",
+			field: "phone",
+			type: "tel",
+		},
+		// { name: "Stages", field: "", type: "Number" },
+		{ name: "Applied Date", parent: null, field: "appliedDate", type: "date" },
+		// { name: "Team", field: "", type: "String" },
+		// { name: "Owner", field: "", type: "String" },
+	]);
+
 	const headMap = new Map([
 		["Rating", "isRatingVisible"],
 		["Stages", "isStagesVisible"],
@@ -40,35 +71,6 @@
 		["Team", arrangeByTeam],
 		["Owner", arrangeByOwner],
 	]);
-
-	onBeforeMount(async () => {
-		store.initData();
-	});
-
-	function arrangeByRating(data) {
-		return data.reduce((acc, user) => {
-			(acc[user.rating] ||= []).push(user);
-			return acc;
-		}, {});
-	}
-	function arrangeByStages(data) {
-		return data.reduce((acc, user) => {
-			(acc[user.stages.state] ||= []).push(user);
-			return acc;
-		}, {});
-	}
-	function arrangeByTeam(data) {
-		return data.reduce((acc, user) => {
-			(acc[user.team.name] ||= []).push(user);
-			return acc;
-		}, {});
-	}
-	function arrangeByOwner(data) {
-		return data.reduce((acc, user) => {
-			(acc[user.owner.name] ||= []).push(user);
-			return acc;
-		}, {});
-	}
 
 	const tableRowMap = new Map([
 		[
@@ -112,6 +114,35 @@
 			},
 		],
 	]);
+
+	onBeforeMount(async () => {
+		store.initData();
+	});
+
+	function arrangeByRating(data) {
+		return data.reduce((acc, user) => {
+			(acc[user.rating] ||= []).push(user);
+			return acc;
+		}, {});
+	}
+	function arrangeByStages(data) {
+		return data.reduce((acc, user) => {
+			(acc[user.stages.state] ||= []).push(user);
+			return acc;
+		}, {});
+	}
+	function arrangeByTeam(data) {
+		return data.reduce((acc, user) => {
+			(acc[user.team.name] ||= []).push(user);
+			return acc;
+		}, {});
+	}
+	function arrangeByOwner(data) {
+		return data.reduce((acc, user) => {
+			(acc[user.owner.name] ||= []).push(user);
+			return acc;
+		}, {});
+	}
 
 	function changeGroup(list, evt, groupedBy) {
 		if (evt.added !== undefined) {
@@ -178,28 +209,13 @@
 
 				<div class="flex items-center">
 					<button
-						v-if="store.selectedCandidates.length === 1"
-						id="updateCandidateButton"
-						data-modal-toggle="updateCandidate"
-						class="p-2 mr-5 text-primary-600 bg-white border border-primary-300 rounded-md hover:bg-primary-600 hover:text-white">
-						<PencilIcon class="w-6 h-6 font-semibold" />
-					</button>
-					<CandidatesUpdate
-						v-if="store.selectedCandidates.length === 1"
-						:data="getCandidateByIdWrapper(store.selectedCandidates[0])"
-						@update-candidate="
-							store.updateCandidate($event);
-							tableKey++;
-						" />
-
-					<button
 						v-if="store.selectedCandidates.length > 0"
-						id="deleteCandidateButton"
-						data-modal-toggle="deleteCandidate"
+						id="deleteSelectedCandidateButton"
+						data-modal-toggle="deleteSelectedCandidate"
 						class="p-2 mr-5 text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-600 hover:text-white">
 						<TrashIcon class="w-6 h-6 font-semibold" />
 					</button>
-					<CandidatesDelete
+					<CandidatesDeleteSelected
 						v-if="store.selectedCandidates.length > 0"
 						@delete-candidate="
 							store.deleteCandidate();
@@ -233,6 +249,7 @@
 						<span class="text-sm font-medium max-md:hidden">Add Candidate</span>
 					</button>
 					<CandidatesAdd
+						:headersConfig="headersConfig"
 						@add-candidate="
 							store.addCandidate($event);
 							tableKey++;
@@ -245,10 +262,12 @@
 			:key="tableKey"
 			:TABLE_DATA="store.candidatesData"
 			:headers="headers"
+			:headersConfig="headersConfig"
 			:groupMap="groupMap"
 			:headMap="headMap"
 			:changeGroup="changeGroup"
-			:tableRowMap="tableRowMap" />
+			:tableRowMap="tableRowMap"
+			@refresh-candidates="tableKey++" />
 
 		<footer class="flex items-center justify-between py-3 mt-auto mb-2">
 			<div class="flex items-center gap-4">

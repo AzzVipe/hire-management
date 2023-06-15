@@ -53,17 +53,25 @@ export const useCandidatesStore = defineStore("counter", {
 			this.selectedCandidates = [];
 		},
 
-		deleteCandidate() {
+		deleteCandidate(_id) {
 			const { deleteCandidateFromDB } = useRealmApp();
 
-			this.selectedCandidates.forEach((id) => {
+			if (_id) {
 				const index = this.candidatesData.findIndex(
-					(element) => id === element._id
+					(element) => _id === element._id
 				);
 				this.candidatesData.splice(index, 1);
-				deleteCandidateFromDB(id);
-			});
-			this.selectedCandidates = [];
+				deleteCandidateFromDB(_id);
+			} else {
+				this.selectedCandidates.forEach((id) => {
+					const index = this.candidatesData.findIndex(
+						(element) => id === element._id
+					);
+					this.candidatesData.splice(index, 1);
+					deleteCandidateFromDB(id);
+				});
+				this.selectedCandidates = [];
+			}
 		},
 
 		sortByNameAtoZ() {

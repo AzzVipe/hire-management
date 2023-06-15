@@ -38,22 +38,32 @@
 					action="#"
 					@submit.prevent="addNewCandidate()">
 					<div class="grid gap-4 mb-8 sm:grid-cols-2">
-						<div>
+						<div v-for="(header, i) in headersConfig" :key="i">
 							<label
-								for="add-first-name"
+								:for="`add-${header.name}`"
 								class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-								>First name</label
+								>{{ header.name }}</label
 							>
 							<input
-								v-model="newCandidate.candidate.firstName"
-								type="text"
-								name="add-first-name"
-								id="add-first-name"
+								v-if="header.parent === null"
+								v-model="newCandidate[header.field]"
+								:type="header.type"
+								:name="`add-${header.name}`"
+								:id="`add-${header.name}`"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-								placeholder="First name"
+								:placeholder="header.name"
+								required />
+							<input
+								v-else
+								v-model="newCandidate[header.parent][header.field]"
+								:type="header.type"
+								:name="`add-${header.name}`"
+								:id="`add-${header.name}`"
+								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+								:placeholder="header.name"
 								required />
 						</div>
-						<div>
+						<!-- <div>
 							<label
 								for="add-last-name"
 								class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
@@ -81,7 +91,7 @@
 								id="add-applied-date"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 								required />
-						</div>
+						</div> -->
 
 						<div>
 							<label
@@ -166,6 +176,7 @@
 			firstName: "",
 			lastName: "",
 		},
+		primaryEmail: "",
 		appliedDate: "",
 		team: {
 			name: "",
@@ -177,6 +188,7 @@
 	});
 
 	const emit = defineEmits(["addCandidate"]);
+	const { headersConfig } = defineProps(["headersConfig"]);
 
 	onMounted(() => {
 		initModals();
@@ -203,6 +215,7 @@
 				firstName: "",
 				lastName: "",
 			},
+			primaryEmail: "",
 			appliedDate: "",
 			team: {
 				name: "",

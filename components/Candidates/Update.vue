@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="candidateData"
-		id="updateCandidate"
+		:id="`updateCandidate-${candidateData._id}`"
 		tabindex="-1"
 		aria-hidden="true"
 		class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
@@ -18,7 +18,7 @@
 					<button
 						type="button"
 						class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-						data-modal-toggle="updateCandidate">
+						:data-modal-toggle="`updateCandidate-${candidateData._id}`">
 						<svg
 							aria-hidden="true"
 							class="w-5 h-5"
@@ -39,22 +39,32 @@
 					action="#"
 					@submit.prevent="updateCandidateHandler()">
 					<div class="grid gap-4 mb-8 sm:grid-cols-2">
-						<div>
+						<div v-for="(header, i) in headersConfig" :key="i">
 							<label
-								for="add-first-name"
+								:for="`add-${header.name}`"
 								class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
-								>First name</label
+								>{{ header.name }}</label
 							>
 							<input
-								v-model="candidateData.candidate.firstName"
-								type="text"
-								name="add-first-name"
-								id="add-first-name"
+								v-if="header.parent === null"
+								v-model="candidateData[header.field]"
+								:type="header.type"
+								:name="`add-${header.name}`"
+								:id="`add-${header.name}`"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-								placeholder="First name"
+								:placeholder="header.name"
+								required />
+							<input
+								v-else
+								v-model="candidateData[header.parent][header.field]"
+								:type="header.type"
+								:name="`add-${header.name}`"
+								:id="`add-${header.name}`"
+								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+								:placeholder="header.name"
 								required />
 						</div>
-						<div>
+						<!-- <div>
 							<label
 								for="add-last-name"
 								class="block mb-2 text-base font-medium text-gray-900 dark:text-white"
@@ -82,7 +92,7 @@
 								id="add-applied-date"
 								class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 								required />
-						</div>
+						</div> -->
 
 						<div>
 							<label
@@ -140,7 +150,7 @@
 					<button
 						@click="updateCandidateHandler()"
 						type="submit"
-						data-modal-toggle="updateCandidate"
+						:data-modal-toggle="`updateCandidate-${candidateData._id}`"
 						class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-semibold rounded-lg text-base px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
 						Update candidate
 					</button>
@@ -154,7 +164,7 @@
 	import { initModals } from "flowbite";
 	import { BSON } from "realm-web";
 
-	const { data } = defineProps(["data"]);
+	const { data, headersConfig } = defineProps(["data", "headersConfig"]);
 	const candidateData = ref(null);
 
 	const emit = defineEmits(["updateCandidate"]);
